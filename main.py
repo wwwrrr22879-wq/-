@@ -25,17 +25,20 @@ menu = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
+# ===== START =====
 @dp.message(Command("start"))
 async def start(message: types.Message):
     if message.from_user.id in banned_users:
         return
     await message.answer("Выберите тему обращения 👇", reply_markup=menu)
 
+# ===== ВЫБОР ТЕМЫ =====
 @dp.message(F.text.in_(["💬 Общение", "🆘 Поддержка", "🤝 Общение и поддержка"]))
 async def choose_topic(message: types.Message):
     user_topic[message.from_user.id] = message.text
     await message.answer("✉️ Напишите ваше сообщение")
 
+# ===== СООБЩЕНИЯ =====
 @dp.message()
 async def messages(message: types.Message):
     uid = message.from_user.id
@@ -46,11 +49,16 @@ async def messages(message: types.Message):
     # ===== ПОЛЬЗОВАТЕЛЬ → АДМИНЫ =====
     if message.chat.id != ADMIN_CHAT_ID:
         topic = user_topic.get(uid, "Без темы")
+        username = f"@{message.from_user.username}" if message.from_user.username else "Без юзернейма"
+
         text = (
             "Сообщение от пользователя💌\n"
-            f"Тема: {topic}\n\n"
+            f"Тема: {topic}\n"
+            f"Юзер: {username}\n"
+            f"ID: {uid}\n\n"
             f"{message.text}"
         )
+
         sent = await bot.send_message(ADMIN_CHAT_ID, text)
         reply_map[sent.message_id] = uid
 
@@ -63,6 +71,7 @@ async def messages(message: types.Message):
         if not user_id:
             return
 
+        # ===== БАН / РАЗБАН =====
         if message.from_user.id == OWNER_ID and message.text:
             if message.text.startswith("/ban"):
                 banned_users.add(user_id)
@@ -81,6 +90,7 @@ async def messages(message: types.Message):
         except:
             pass
 
+# ===== СПИСОК БАНОВ =====
 @dp.message(Command("banlist"))
 async def banlist(message: types.Message):
     if message.from_user.id != OWNER_ID:
@@ -102,5 +112,6 @@ def run():
 
 threading.Thread(target=run).start()
 
+# ===== RUN =====
 if __name__ == "__main__":
     asyncio.run(dp.start_polling(bot))
