@@ -5,7 +5,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from flask import Flask
 import threading
 
-TOKEN = "8556657168:AAFwnvcgwL-RjJ_tHcMe_D_qrUnsT-XH2a0"
+TOKEN = "7396521184:AAE6-GJkd7WCLnmImfI8urQh6FKStaYblK8"
 ADMIN_CHAT_ID = -1003338724164
 OWNER_ID = 7863316600
 
